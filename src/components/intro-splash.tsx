@@ -18,16 +18,22 @@ export function IntroSplash() {
   const [flipVars, setFlipVars] = useState<React.CSSProperties>({});
 
   useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (typeof sessionStorage === "undefined") return;
+
     let already = false;
     try {
       already = sessionStorage.getItem(SESSION_KEY) === "1";
     } catch {}
+
     if (already) return;
 
-    // Frame berikutnya: mulai animasi masuk
-    requestAnimationFrame(() => setPhase("enter"));
+    if (typeof requestAnimationFrame !== "undefined") {
+      requestAnimationFrame(() => setPhase("enter"));
+    } else {
+      setPhase("enter");
+    }
 
-    // Setelah logo diam cukup lama, hitung FLIP dan terbangkan
     const tFly = setTimeout(() => triggerFly(), 2000);
     const tGone = setTimeout(() => setPhase("gone"), 3000);
 
@@ -38,6 +44,8 @@ export function IntroSplash() {
   }, []);
 
   function triggerFly(fast = false) {
+    if (typeof window === "undefined") return;
+    if (typeof document === "undefined") return;
     if (!logoRef.current) return;
 
     // FIRST — posisi logo saat ini (center screen)
@@ -65,12 +73,17 @@ export function IntroSplash() {
   }
 
   function handleSkip() {
+    if (typeof window === "undefined") return;
     if (phase === "fly" || phase === "gone") return;
+
     triggerFly(true);
     setTimeout(() => setPhase("gone"), 600);
   }
 
   useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (typeof sessionStorage === "undefined") return;
+
     if (phase === "gone") {
       try {
         sessionStorage.setItem(SESSION_KEY, "1");

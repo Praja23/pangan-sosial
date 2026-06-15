@@ -33,32 +33,55 @@ const CITY_PINS: CityPin[] = [
 function useInView<T extends HTMLElement>() {
   const ref = useRef<T>(null);
   const [inView, setInView] = useState(false);
+
   useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (typeof IntersectionObserver === "undefined") {
+      setInView(true);
+      return;
+    }
     if (!ref.current) return;
-    const obs = new IntersectionObserver(
-      ([e]) => e.isIntersecting && setInView(true),
-      { threshold: 0.2 }
-    );
+
+    const obs = new IntersectionObserver(([e]) => e.isIntersecting && setInView(true), {
+      threshold: 0.2,
+    });
+
     obs.observe(ref.current);
     return () => obs.disconnect();
   }, []);
+
   return [ref, inView] as const;
 }
 
 function useCountUp(target: number, duration = 2000, start = false) {
   const [val, setVal] = useState(0);
+
   useEffect(() => {
     if (!start) return;
+    if (typeof window === "undefined") return;
+
+    if (
+      typeof performance === "undefined" ||
+      typeof requestAnimationFrame === "undefined" ||
+      typeof cancelAnimationFrame === "undefined"
+    ) {
+      setVal(target);
+      return;
+    }
+
     const t0 = performance.now();
     let raf = 0;
+
     const tick = (t: number) => {
       const p = Math.min(1, (t - t0) / duration);
       setVal(Math.floor(target * (1 - Math.pow(1 - p, 3))));
       if (p < 1) raf = requestAnimationFrame(tick);
     };
+
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
   }, [target, duration, start]);
+
   return val;
 }
 
@@ -72,7 +95,9 @@ export function IndonesiaMapSection() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <Reveal>
           <div className="text-center max-w-2xl mx-auto mb-12">
-            <p className="text-sm font-semibold text-primary uppercase tracking-wider">Jangkauan Nasional</p>
+            <p className="text-sm font-semibold text-primary uppercase tracking-wider">
+              Jangkauan Nasional
+            </p>
             <h2 className="mt-2 font-display text-4xl sm:text-5xl font-bold">
               Total Mitra <span className="text-gradient">{count.toLocaleString("id-ID")}+</span>
             </h2>
@@ -96,9 +121,16 @@ export function IndonesiaMapSection() {
               >
                 <defs>
                   <filter id="islandGlow" x="-20%" y="-20%" width="140%" height="140%">
-                    <feDropShadow dx="0" dy="0" stdDeviation="3" floodColor="oklch(0.62 0.14 165)" floodOpacity="0.45" />
+                    <feDropShadow
+                      dx="0"
+                      dy="0"
+                      stdDeviation="3"
+                      floodColor="oklch(0.62 0.14 165)"
+                      floodOpacity="0.45"
+                    />
                   </filter>
                 </defs>
+
                 <g filter="url(#islandGlow)">
                   {INDONESIA_PROVINCES.map((p) => (
                     <path
@@ -147,8 +179,22 @@ export function IndonesiaMapSection() {
 
                     {active === c.name && (
                       <g className="pin-tooltip" transform={`translate(${c.x}, ${c.y - 38})`}>
-                        <rect x={-46} y={-22} width="92" height="26" rx="8" fill="oklch(0.22 0.025 50)" />
-                        <text x={0} y={-4} textAnchor="middle" fill="oklch(0.99 0.005 80)" fontSize="11" fontWeight="600">
+                        <rect
+                          x={-46}
+                          y={-22}
+                          width="92"
+                          height="26"
+                          rx="8"
+                          fill="oklch(0.22 0.025 50)"
+                        />
+                        <text
+                          x={0}
+                          y={-4}
+                          textAnchor="middle"
+                          fill="oklch(0.99 0.005 80)"
+                          fontSize="11"
+                          fontWeight="600"
+                        >
                           {c.mitra}
                         </text>
                       </g>
@@ -160,7 +206,10 @@ export function IndonesiaMapSection() {
 
             <div className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs sm:text-sm text-muted-foreground">
               <span className="inline-flex items-center gap-2">
-                <span className="inline-block w-2.5 h-2.5 rounded-full" style={{ background: "oklch(0.7 0.17 55)" }} />
+                <span
+                  className="inline-block w-2.5 h-2.5 rounded-full"
+                  style={{ background: "oklch(0.7 0.17 55)" }}
+                />
                 Hub utama
               </span>
               <span className="inline-flex items-center gap-2">
@@ -168,7 +217,10 @@ export function IndonesiaMapSection() {
                 Kota mitra aktif
               </span>
               <span className="inline-flex items-center gap-2">
-                <span className="inline-block w-2.5 h-2.5 rounded-full" style={{ background: "oklch(0.62 0.14 165)" }} />
+                <span
+                  className="inline-block w-2.5 h-2.5 rounded-full"
+                  style={{ background: "oklch(0.62 0.14 165)" }}
+                />
                 Wilayah pulau
               </span>
             </div>
