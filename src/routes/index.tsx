@@ -9,6 +9,8 @@ import {
 import heroImg from "@/assets/hero-illustration.png";
 import { SiteNav, SiteFooter } from "@/components/site-nav";
 import { Reveal } from "@/components/reveal";
+import { IndonesiaMapSection } from "@/components/indonesia-map";
+import { ShieldAlert } from "lucide-react";
 
 import { Marquee } from "@/components/marquee";
 
@@ -381,13 +383,38 @@ function AIScore() {
 
 function Features() {
   const items = [
-    { icon: MapPin, title: "Smart Radius System", desc: "Geolocation otomatis dengan slider radius 1-20 km." },
-    { icon: Clock, title: "60-Minute Timer", desc: "Reservasi terkunci, stok kembali otomatis jika expired." },
-    { icon: ShieldCheck, title: "Verifikasi Mitra", desc: "Validasi NPWP, NIB, SK Program oleh tim admin." },
-    { icon: Activity, title: "Analytics Dashboard", desc: "Heatmap distribusi, growth chart, impact tracker." },
-    { icon: Trophy, title: "Leaderboard Mitra", desc: "Ranking nasional berdasarkan kontribusi." },
-    { icon: Package, title: "Auto Cleanup", desc: "Makanan otomatis terhapus sesuai masa berlaku." },
+    {
+      icon: MapPin,
+      title: "Pencarian Berbasis Lokasi",
+      desc: "Filter listing makanan berdasarkan kota & kategori mitra terdekat.",
+    },
+    {
+      icon: Clock,
+      title: "Reservasi 60 Menit",
+      desc: "Slot terkunci otomatis; stok kembali jika tidak diambil tepat waktu.",
+    },
+    {
+      icon: ShieldCheck,
+      title: "Verifikasi Mitra oleh Admin",
+      desc: "Admin meninjau & menyetujui mitra sebelum boleh publish listing.",
+    },
+    {
+      icon: ShieldAlert,
+      title: "Laporan Dua Arah + 3-Strike",
+      desc: "User lapor mitra, mitra lapor user. 3 warning → akun otomatis suspended.",
+    },
+    {
+      icon: Users,
+      title: "Dashboard Peran",
+      desc: "Tampilan berbeda untuk Penerima, Mitra/Donor, dan Admin.",
+    },
+    {
+      icon: Package,
+      title: "Riwayat Reservasi",
+      desc: "Lacak status: aktif, sudah diambil, dibatalkan, atau kedaluwarsa.",
+    },
   ];
+
   return (
     <section id="impact" className="pt-20 pb-10 lg:pt-28 lg:pb-12">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
@@ -646,6 +673,7 @@ function Landing() {
         <Hero />
         <Partners />
         <Stats />
+        <IndonesiaMapSection />
         <HowItWorks />
         <Categories />
         <AIScore />

@@ -40,7 +40,7 @@ export function SiteNav() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <div className={`flex items-center justify-between rounded-2xl px-4 sm:px-6 py-3 transition-all duration-500 ${scrolled ? "glass-card shadow-soft" : ""}`}>
           <Link to="/" className="group flex items-center gap-2 font-display font-bold text-lg">
-            <div className="relative grid place-items-center w-9 h-9 rounded-xl bg-[image:var(--gradient-warm)] shadow-glow group-hover:scale-110 transition-transform duration-300">
+            <div id="site-logo-anchor" className="relative grid place-items-center w-9 h-9 rounded-xl bg-[image:var(--gradient-warm)] shadow-glow group-hover:scale-110 transition-transform duration-300">
               <Leaf className="w-5 h-5 text-primary-foreground" />
               <span className="absolute inset-0 rounded-xl animate-ring-pulse" aria-hidden />
             </div>

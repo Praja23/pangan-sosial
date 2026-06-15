@@ -11,6 +11,7 @@ import { useEffect, type ReactNode } from "react";
 import { Toaster } from "sonner";
 import { AuthProvider } from "../lib/auth-context";
 import { ThemeProvider, themeInitScript } from "../lib/theme-context";
+import { IntroSplash } from "../components/intro-splash";
 
 
 import appCss from "../styles.css?url";
@@ -111,6 +112,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <AuthProvider>
+          <IntroSplash />
           <Outlet />
           <Toaster position="top-right" richColors />
         </AuthProvider>
