@@ -11,29 +11,29 @@ type Phase =
   | "gone"; // overlay fade out, selesai
 
 export function IntroSplash() {
-  const [phase, setPhase] = useState<Phase>("hidden");
-  const logoRef = useRef<HTMLDivElement>(null);
+  // PERBAIKAN: inisialisasi state secara sinkron.
+  // Jika sessionStorage sudah menandai pernah diputar, langsung "gone".
+  // Selain itu, langsung "enter" (bukan "hidden") agar overlay langsung tampil.
+  const [phase, setPhase] = useState<Phase>(() => {
+    if (typeof window === "undefined" || typeof sessionStorage === "undefined") return "enter";
+    try {
+      const already = sessionStorage.getItem(SESSION_KEY) === "1";
+      return already ? "gone" : "enter";
+    } catch {
+      return "enter";
+    }
+  });
 
-  // CSS custom properties untuk FLIP transform
+  const logoRef = useRef<HTMLDivElement>(null);
   const [flipVars, setFlipVars] = useState<React.CSSProperties>({});
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    if (typeof sessionStorage === "undefined") return;
+    // Jika sudah "gone" atau bukan "enter", jalankan timer? Tidak perlu.
+    // Timer hanya perlu jika fase awal "enter"
+    if (phase !== "enter") return;
 
-    let already = false;
-    try {
-      already = sessionStorage.getItem(SESSION_KEY) === "1";
-    } catch {}
-
-    if (already) return;
-
-    if (typeof requestAnimationFrame !== "undefined") {
-      requestAnimationFrame(() => setPhase("enter"));
-    } else {
-      setPhase("enter");
-    }
-
+    // Catatan: sessionStorage sudah dicek di atas, jadi jika sampai sini berarti belum pernah diputar.
+    // Timer untuk auto-play
     const tFly = setTimeout(() => triggerFly(), 2000);
     const tGone = setTimeout(() => setPhase("gone"), 3000);
 
@@ -41,23 +41,19 @@ export function IntroSplash() {
       clearTimeout(tFly);
       clearTimeout(tGone);
     };
-  }, []);
+  }, [phase]); // efek bergantung pada phase, hanya sekali karena phase === "enter"
 
   function triggerFly(fast = false) {
     if (typeof window === "undefined") return;
     if (typeof document === "undefined") return;
     if (!logoRef.current) return;
 
-    // FIRST — posisi logo saat ini (center screen)
     const from = logoRef.current.getBoundingClientRect();
-
-    // LAST — posisi anchor logo di navbar
     const anchor = document.getElementById("site-logo-anchor");
     const to = anchor
       ? anchor.getBoundingClientRect()
       : { top: 16, left: 16, width: 36, height: 36 };
 
-    // INVERT — hitung delta agar logo "pindah" lewat transform saja
     const dx = to.left + to.width / 2 - (from.left + from.width / 2);
     const dy = to.top + to.height / 2 - (from.top + from.height / 2);
     const scale = Math.min(to.width / from.width, to.height / from.height);
@@ -91,6 +87,8 @@ export function IntroSplash() {
     }
   }, [phase]);
 
+  // PERBAIKAN: jika phase "gone", tidak render. Jika "hidden" (tidak akan pernah terjadi), juga tidak render.
+  // Tapi karena kita tidak pernah set "hidden", maka aman.
   if (phase === "hidden" || phase === "gone") return null;
 
   const isFly = phase === "fly";
@@ -104,11 +102,6 @@ export function IntroSplash() {
       <div className="intro-glow" aria-hidden />
 
       <div className={`intro-content${isFly ? " intro-content--exit" : ""}`}>
-        {/*
-          Logo tetap in-flow (tidak jadi fixed).
-          Saat phase "fly", class intro-logo--fly aktif dan
-          CSS @keyframes menggeser lewat translate+scale.
-        */}
         <div
           ref={logoRef}
           className={[
