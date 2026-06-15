@@ -1,1 +1,0 @@
-import{j as r}from"./index-BMqV4kYC.js";const t=({error:e})=>r.jsxs("div",{className:"min-h-screen grid place-items-center text-sm",children:["Gagal memuat: ",e.message]});export{t as errorComponent};
